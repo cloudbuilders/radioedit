@@ -15,8 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import json
 import openstack.compute
+import datetime
 import cherrypy
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -60,18 +62,20 @@ echo FINISHED
 
     @cherrypy.expose
     def index(self):
-        return '<html><body><ul><a href="/new">New</a><br/><a href="/reset">reset</a><br />' + reduce(
+        return '<html><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
                lambda x,y: x+y,
-               map(lambda x: '<li><a href="http://%s">%s</a></li>' % 
-               (x['ip'], x['name']), self.list()), "") + "</ul></body></html>"
+               map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td></tr>' % 
+               (x['ip'], x['name'].split('-')[1], x['ip'], x['name'].split('-')[2]), self.list()), "") + "</table></body></html>"
 
     @cherrypy.expose
-    def new(self):
+    def new(self, name=None):
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
-        name = self.prefix + str(uuid4())
-        srv = self.compute.servers.create(name, img.id, flav.id,
+        if name is None:
+            name = str(uuid4()).replace('-', '')
+        full_name = self.prefix + '-' + name + '-' + str(datetime.datetime.today()).replace('-', ' ')
+        srv = self.compute.servers.create(full_name.replace(' ','_'), img.id, flav.id,
             files={"/etc/cron.d/firstboot": self.crond,
                    "/root/install.sh": self.root_install})
         if self.first == "":
