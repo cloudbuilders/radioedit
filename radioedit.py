@@ -65,8 +65,8 @@ echo FINISHED
         return '<html><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
                lambda x,y: x+y,
                map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td></tr>' % 
-               (x['ip'], x['name'].split('-')[1], x['ip'], x.metadata['created']), self.list()), "") + "</table></body></html>"
-
+               (x['ip'], x['name'].split('-')[1], x['ip'], x['created']), self.list()), "") + "</table></body></html>"
+            
     @cherrypy.expose
     def new(self, name=None):
         img = [i for i in self.compute.images.list()
@@ -93,7 +93,8 @@ echo FINISHED
         raise cherrypy.HTTPRedirect("/")
 
     def list(self):
-        return [{"ip": s.public_ip, "name": s.name}
+        return [{"ip": s.public_ip, "name": s.name, 
+                "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown"}
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
