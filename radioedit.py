@@ -65,7 +65,7 @@ echo FINISHED
         return '<html><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
                lambda x,y: x+y,
                map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td></tr>' % 
-               (x['ip'], x['name'].split('-')[1], x['ip'], x['name'].split('-')[2]), self.list()), "") + "</table></body></html>"
+               (x['ip'], x['name'].split('-')[1], x['ip'], x.metadata['created']), self.list()), "") + "</table></body></html>"
 
     @cherrypy.expose
     def new(self, name=None):
@@ -77,7 +77,8 @@ echo FINISHED
         full_name = self.prefix + '-' + name + '-' + str(datetime.datetime.today()).replace('-', ' ')
         srv = self.compute.servers.create(full_name.replace(' ','_'), img.id, flav.id,
             files={"/etc/cron.d/firstboot": self.crond,
-                   "/root/install.sh": self.root_install})
+                   "/root/install.sh": self.root_install},
+            meta={"created", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
         if self.first == "":
             self.first = srv.public_ip
         raise cherrypy.HTTPRedirect("/")
