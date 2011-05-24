@@ -16,16 +16,14 @@ class Root(object):
 
     def __init__(self, cfg="cloud.cfg"):
         from openstack.compute import Compute
-        if os.environ.has_key("RE_CONFIG"):
-            cfg = os.environ["RE_CONFIG"]
         cp = SafeConfigParser()
         cp.read([cfg])
         self.first = ""
         self.user = cp.get("rackspacecloud", "user")
         self.apikey = cp.get("rackspacecloud", "apikey")
-        self.compute = Compute(username=self.user, apikey=self.apikey)
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
+        self.compute = Compute(username=self.user, apikey=self.apikey)
         self.root_install = """#!/bin/bash
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -78,4 +76,4 @@ echo FINISHED
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
-application = cherrypy.Application(Root(), script_name=None, config=None)
+application = cherrypy.Application(Root(cfg="/etc/cloud.cfg"), script_name=None, config=None)
