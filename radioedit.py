@@ -3,6 +3,8 @@
 import json
 import openstack.compute
 import cherrypy
+from mako.template import Template
+from mako.lookup import TemplateLookup
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
 
@@ -41,7 +43,10 @@ echo FINISHED
 
     @cherrypy.expose
     def index(self):
-        return "<html><body><ul>" + reduce(lambda x,y: x+y, map(lambda x:  "<li>%s %s</li>" % (x['name'], x['ip']), self.list()), "") + "</ul></body></html>"
+        return '<html><body><ul><a href="/new">New</a><br/><a href="/reset">reset</a><br />' + reduce(
+               lambda x,y: x+y,
+               map(lambda x: '<li><a href="http://%s">%s</a></li>' % 
+               (x['ip'], x['name']), self.list()), "") + "</ul></body></html>"
 
     @cherrypy.expose
     def new(self):
@@ -54,15 +59,16 @@ echo FINISHED
                    "/root/install.sh": self.root_install})
         if self.first == "":
             self.first = srv.public_ip
-        return json.dumps({"ip": srv.public_ip, "name": srv.name})
+        raise cherrypy.HTTPRedirect("/")
 
+    @cherrypy.expose
     def reset(self):
         self.first = ""
         servers = self.compute.servers.list()
         for server in servers:
             if server.name.find(self.prefix) == 0:
                 self.compute.servers.delete(server)
-        return json.dumps([ s.name for s in server ])
+        raise cherrypy.HTTPRedirect("/")
 
     def list(self):
         return [{"ip": s.public_ip, "name": s.name}
