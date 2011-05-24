@@ -78,7 +78,7 @@ echo FINISHED
         srv = self.compute.servers.create(full_name.replace(' ','_'), img.id, flav.id,
             files={"/etc/cron.d/firstboot": self.crond,
                    "/root/install.sh": self.root_install},
-            meta={"created", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+            meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
         if self.first == "":
             self.first = srv.public_ip
         raise cherrypy.HTTPRedirect("/")
