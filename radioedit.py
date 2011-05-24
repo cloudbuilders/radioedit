@@ -7,6 +7,7 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
+import os
 
 
 class Root(object):
@@ -15,6 +16,8 @@ class Root(object):
 
     def __init__(self, cfg="cloud.cfg"):
         from openstack.compute import Compute
+        if os.environ.has_key("RE_CONFIG"):
+            cfg = os.environ["RE_CONFIG"]
         cp = SafeConfigParser()
         cp.read([cfg])
         self.first = ""
@@ -75,11 +78,4 @@ echo FINISHED
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
-
-if __name__ == "__main__":
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("-c", "--configfile", dest="config_file",
-                      default="cloud.cfg")
-    (options, args) = parser.parse_args()
-    cherrypy.quickstart(Root(cfg=options.config_file))
+application = cherrypy.Application(Root(), script_name=None, config=None)
