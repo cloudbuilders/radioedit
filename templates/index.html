@@ -4,7 +4,7 @@
   </head>
   <body>
     <form method="get"  action="/new"><input type="text" name="name"></form>
-    <form method="post" action="/reset" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form>
+    <form method="post" action="/kill?all=true" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form>
 
     {.section servers}
     <table>
@@ -13,13 +13,15 @@
         <th>IP</th>
         <th>root</th>
         <th>created</th>
+        <th>action</th>
       </tr>
       {.repeated section @}
-         <tr>
+         <tr style="background: url(http://{ip}/media/dashboard/img/content_shadow.png) repeat-x;">
            <td><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
            <td>{created}</td>
+           <td><a href="/kill?name={id}">kill</a></td>
          </tr>
       {.end}
     </table>
