@@ -35,7 +35,7 @@ class Root(object):
     def gen_password(self, length=8):
         pw = ""
         for i in range(length):
-            pw += chars[random.randint(0,len(chars))]
+            pw += self.chars[random.randint(0,len(self.chars))]
         return pw
                     
     def __init__(self, cfg="cloud.cfg"):
