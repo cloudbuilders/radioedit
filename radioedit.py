@@ -79,15 +79,16 @@ class RadioEdit(object):
         raise cherrypy.HTTPRedirect("/")
 
     @cherrypy.expose
-    def reset(self):
+    def kill(self, name=None, all=None):
         servers = self.compute.servers.list()
         for server in servers:
             if server.name.find(self.prefix) == 0:
-                self.compute.servers.delete(server)
+                if all or name == server.name:
+                    self.compute.servers.delete(server)
         raise cherrypy.HTTPRedirect("/")
 
     def list(self):
-        return [{"ip": s.public_ip, 
+        return [{"ip": s.public_ip, 'id': s.name,
                 "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown",
                 "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
                 "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
