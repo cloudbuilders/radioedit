@@ -35,7 +35,7 @@ class RadioEdit(object):
     def gen_password(self, length=8):
         pw = ""
         for i in range(length):
-            pw += self.chars[random.randint(0,len(self.chars))]
+            pw += random.choice(self.chars)
         return pw
                     
     def __init__(self, cfg="cloud.cfg"):
@@ -47,6 +47,14 @@ class RadioEdit(object):
         self.first = ""
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
+        re_admin = cp.get("radioedit", "admin")
+        re_admin_pass = cp.get("radioedit", "adminpass")
+        users = { re_admin: re_admin_pass }
+        cherrypy.config.update( {'/': {'tools.basic_auth.on': True,
+                      'tools.basic_auth.realm': 'Radioedit',
+                      'tools.basic_auth.users': users,
+                      'tools.basic_auth.encrypt': lambda x: x}})
+        
         self.compute = Compute(username=username, apikey=apikey)
         self.base = os.path.dirname(os.path.abspath(__file__))
 
