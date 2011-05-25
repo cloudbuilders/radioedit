@@ -16,6 +16,9 @@
 #} limitations under the License.
 
 
+import json
+import openstack.compute
+import datetime
 import cherrypy
 import datetime
 import json
@@ -27,6 +30,9 @@ import random
 import string
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
+import os
+import random
+import string
 
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
@@ -49,7 +55,7 @@ class RadioEdit(object):
         apikey = cp.get("rackspacecloud", "apikey")
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
-        self.compute = Compute(username=user, apikey=apikey)
+        self.compute = Compute(username=username, apikey=apikey)
         self.root_install = """#!/bin/bash
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
