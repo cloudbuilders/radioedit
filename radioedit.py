@@ -52,6 +52,7 @@ class RadioEdit(object):
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
         self.compute = Compute(username=username, apikey=apikey)
+        self.base = os.path.dirname(os.path.abspath(__file__))
 
     @cherrypy.expose
     def index(self):
@@ -59,7 +60,7 @@ class RadioEdit(object):
             servers = self.list()
         except:
             servers = []
-        tmpl = open('templates/index.html').read()
+        tmpl = open(self.base+'/templates/index.html').read()
         return jsontemplate.expand(tmpl, {'servers': servers})
 
     @cherrypy.expose
@@ -72,7 +73,7 @@ class RadioEdit(object):
         if name is None:
             name = self.prefix + '-' + str(uuid4()).replace('-', '')
         cron = "* * * * * root /bin/bash /root/install.sh\n"
-        install = open('templates/install.sh').read().format(password=password, pubkey=self.pubkey)
+        install = open(self.base+'/templates/install.sh').read().format(password=password, pubkey=self.pubkey)
         self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": cron,
                    "/root/install.sh": install},
