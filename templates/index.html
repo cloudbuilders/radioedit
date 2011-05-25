@@ -6,6 +6,10 @@
     <form method="get"  action="/new"><input type="text" name="name"></form>
     <form method="post" action="/kill?all=true" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form>
 
+    {.section exception}
+    <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
+    <p>{msg}</p>
+    {.end} 
     {.section servers}
     <table>
       <tr>
