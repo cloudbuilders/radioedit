@@ -42,9 +42,9 @@ class Root(object):
         from openstack.compute import Compute
         cp = SafeConfigParser()
         cp.read([cfg])
-        self.first = ""
         user = cp.get("rackspacecloud", "user")
         apikey = cp.get("rackspacecloud", "apikey")
+        self.first = ""
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
         self.compute = Compute(username=user, apikey=apikey)
