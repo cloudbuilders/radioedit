@@ -48,6 +48,7 @@ class RadioEdit(object):
         cp.read([cfg])
         username = cp.get("rackspacecloud", "user")
         apikey = cp.get("rackspacecloud", "apikey")
+        self.first = ""
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
         self.compute = Compute(username=username, apikey=apikey)
@@ -63,7 +64,7 @@ class RadioEdit(object):
 
     @cherrypy.expose
     def new(self, name=None):
-        passwd = self.gen_password()
+        password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
@@ -77,7 +78,7 @@ class RadioEdit(object):
                    "/root/install.sh": install},
             meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
-                  "password": passwd})
+                  "password": password})
         raise cherrypy.HTTPRedirect("/")
 
     @cherrypy.expose
