@@ -97,12 +97,12 @@ echo FINISHED
         srvname = self.prefix + str(uuid4()).replace('-', '')
         if name is None:
             name = self.prefix + str(uuid4()).replace('-', '')
-        srv = self.compute.servers.create(srvname, img.id, flav.id,
+        self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": self.crond,
                    "/root/install.sh": self.root_install % (passwd, self.pubkey)},
             meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
-                  "password": pw})
+                  "password": passwd})
         raise cherrypy.HTTPRedirect("/")
 
     @cherrypy.expose
