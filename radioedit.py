@@ -30,33 +30,21 @@ class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
 
     # using cron since injected files aren't executable
-
+    base = os.path.dirname(os.path.abspath(__file__))
     chars = string.letters + string.digits
+
     def gen_password(self, length=8):
         pw = ""
         for i in range(length):
             pw += random.choice(self.chars)
         return pw
                     
-    def __init__(self, cfg="cloud.cfg"):
+    def __init__(self, username, apikey, pubkey, prefix="nova"):
         from openstack.compute import Compute
-        cp = SafeConfigParser()
-        cp.read([cfg])
-        username = cp.get("rackspacecloud", "user")
-        apikey = cp.get("rackspacecloud", "apikey")
+        self.prefix = prefix
+        self.pubkey = pubkey
         self.first = ""
-        self.prefix = cp.get("radioedit", "prefix")
-        self.pubkey = cp.get("radioedit", "pubkey")
-        re_admin = cp.get("radioedit", "admin")
-        re_admin_pass = cp.get("radioedit", "adminpass")
-        users = { re_admin: re_admin_pass }
-        cherrypy.config.update( {'/': {'tools.basic_auth.on': True,
-                      'tools.basic_auth.realm': 'Radioedit',
-                      'tools.basic_auth.users': users,
-                      'tools.basic_auth.encrypt': lambda x: x}})
-        
         self.compute = Compute(username=username, apikey=apikey)
-        self.base = os.path.dirname(os.path.abspath(__file__))
 
     @cherrypy.expose
     def index(self):
@@ -102,7 +90,27 @@ class RadioEdit(object):
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
-application = cherrypy.Application(RadioEdit('/etc/radioedit.cfg'), script_name=None, config=None)
+
+def setup_radio_edit(cfg="/etc/radioedit.cfg"):
+    cp = SafeConfigParser()
+    cp.read([cfg])
+    username = cp.get("rackspacecloud", "user")
+    apikey = cp.get("rackspacecloud", "apikey")
+    prefix = cp.get("radioedit", "prefix")
+    pubkey = cp.get("radioedit", "pubkey")
+    re_admin = cp.get("radioedit", "admin")
+    re_admin_pass = cp.get("radioedit", "adminpass")
+    users = { re_admin: re_admin_pass }
+    conf = {'/': 
+                 {'tools.basic_auth.on': True,
+                  'tools.basic_auth.realm': 'Radioedit',
+                  'tools.basic_auth.users': users,
+                  'tools.basic_auth.encrypt': lambda x: x}}
+    return cherrypy.Application(
+               RadioEdit(username,apikey,pubkey,prefix),
+               script_name=None, config=conf)
+
+application = setup_radio_edit()
 
 if __name__ == '__main__':
-    cherrypy.quickstart(RadioEdit('/etc/radioedit.cfg'))
+    cherrypy.quickstart(application.root)
