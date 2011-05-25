@@ -72,7 +72,7 @@ class RadioEdit(object):
         if name is None:
             name = self.prefix + '-' + str(uuid4()).replace('-', '')
         cron = "* * * * * root /bin/bash /root/install.sh\n"
-        install = open('templates/install.sh').read().format(passwd=passwd, pubkey=self.pubkey)
+        install = open('templates/install.sh').read().format(password=password, pubkey=self.pubkey)
         self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": cron,
                    "/root/install.sh": install},

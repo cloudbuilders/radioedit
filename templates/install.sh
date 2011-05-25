@@ -7,7 +7,7 @@ exec 2>&1
 rm -f /etc/cron.d/firstboot
 
 echo Setting root password
-echo root:{passwd} | chpasswd
+echo root:{password} | chpasswd
 
 echo Injecting key
 mkdir /root/.ssh
