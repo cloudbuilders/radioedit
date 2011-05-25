@@ -65,7 +65,7 @@ echo FINISHED
         return '<html><head><title>[radioedit]</title></head><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
                lambda x,y: x+y,
                map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td></tr>' % 
-               (x['ip'], x['name'].split('-')[1], x['ip'], x['created']), self.list()), "") + "</table></body></html>"
+               (x['ip'], x['name'], x['ip'], x['created']), self.list()), "") + "</table></body></html>"
             
     @cherrypy.expose
     def new(self, name=None):
