@@ -25,6 +25,7 @@ import random
 import string
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
+from operator import itemgetter
 
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
@@ -84,13 +85,23 @@ class RadioEdit(object):
         raise cherrypy.HTTPRedirect("/")
 
     def list(self):
-        return [{"ip": s.public_ip, 'id': s.name,
-                "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown",
-                "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
-                "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
-                  for s in self.compute.servers.list()
-                  if s.name.find(self.prefix) == 0]
+        return sorted([{"ip": s.public_ip, 'id': s.name,
+            "created": ago(s.metadata.has_key('created') and s.metadata['created'] or "Unknown", "%Y-%m-%d %H:%M:%S"),
+            "date_created": (s.metadata.has_key('created') and 
+                s.metadata['created'] or "1970-01-01 00:00:00"),
+            "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
+            "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
+            for s in self.compute.servers.list()
+            if s.name.find(self.prefix) == 0], key=lambda x:
+                datetime.datetime.strptime(x['date_created'],
+                "%Y-%m-%d %H:%M:%S"))
 
+def ago(date_string, date_format):
+    if date_string == "Unknown": return date_string
+    d = datetime.datetime.strptime(date_string, date_format)
+    n = datetime.datetime.now()
+    diff = n - d
+    return "%0.2f hours ago" % (diff.total_seconds() / 3600)
 
 def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     cp = SafeConfigParser()
@@ -114,4 +125,4 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
 application = setup_radio_edit()
 
 if __name__ == '__main__':
-    cherrypy.quickstart(application.root)
+    cherrypy.quickstart(application.root, '/', application.config)
