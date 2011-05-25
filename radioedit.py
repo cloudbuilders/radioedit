@@ -56,7 +56,7 @@ rm -f /etc/cron.d/firstboot
 touch /tmp/foo
 apt-get install -y curl screen
 cd /opt/
-screen curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash
+screen -S auto.sh bash -c "curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash"
 echo FINISHED
 """ % (self.pubkey) 
 
