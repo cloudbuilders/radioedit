@@ -54,9 +54,9 @@ echo %s > /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authorized_keys
 rm -f /etc/cron.d/firstboot
 touch /tmp/foo
-apt-get install -y curl
+apt-get install -y curl screen
 cd /opt/
-curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash
+screen curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash
 echo FINISHED
 """ % (self.pubkey) 
 
