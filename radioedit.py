@@ -16,14 +16,10 @@
 #} limitations under the License.
 
 
-import json
 import openstack.compute
 import datetime
 import cherrypy
-import datetime
-import json
 import jsontemplate
-import openstack.compute
 import os
 import random
 import string
