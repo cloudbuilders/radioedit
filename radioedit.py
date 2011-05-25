@@ -72,13 +72,14 @@ echo FINISHED
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
+        srvname = self.prefix + str(uuid4()).replace('-', '')
         if name is None:
-            name = str(uuid4()).replace('-', '')
-        full_name = self.prefix + '-' + name + '-' + str(datetime.datetime.today()).replace('-', ' ')
-        srv = self.compute.servers.create(full_name.replace(' ','_'), img.id, flav.id,
+            name = self.prefix + str(uuid4()).replace('-', '')
+        srv = self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": self.crond,
                    "/root/install.sh": self.root_install},
-            meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+            meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                  "name": name})
         if self.first == "":
             self.first = srv.public_ip
         raise cherrypy.HTTPRedirect("/")
@@ -93,8 +94,9 @@ echo FINISHED
         raise cherrypy.HTTPRedirect("/")
 
     def list(self):
-        return [{"ip": s.public_ip, "name": s.name, 
-                "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown"}
+        return [{"ip": s.public_ip, 
+                "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown",
+                "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
