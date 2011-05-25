@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 # implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+#} limitations under the License.
 
 
 import json
@@ -56,7 +56,7 @@ rm -f /etc/cron.d/firstboot
 touch /tmp/foo
 apt-get install -y curl screen
 cd /opt/
-screen -S auto.sh bash -c "curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash"
+bash -c "curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash"
 echo FINISHED
 """ % (self.pubkey) 
 
