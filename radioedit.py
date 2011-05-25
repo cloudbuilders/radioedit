@@ -91,7 +91,7 @@ echo FINISHED
             
     @cherrypy.expose
     def new(self, name=None):
-        passwd = self.gen_password()
+        password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
@@ -103,11 +103,7 @@ echo FINISHED
                    "/root/install.sh": self.root_install % (passwd, self.pubkey)},
             meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
-<<<<<<< HEAD
                   "password": password})
-=======
-                  "password": passwd})
->>>>>>> ae10e817fadcb45477005894c40cdb86644411a5
         raise cherrypy.HTTPRedirect("/")
 
     @cherrypy.expose
