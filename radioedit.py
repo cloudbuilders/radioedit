@@ -25,11 +25,11 @@ from mako.lookup import TemplateLookup
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
 import os
-
+import random
+import string
 
 class Root(object):
     """Define methods necessary to make our web page work with cherrypy"""
-    import string
     crond = "* * * * * root /bin/bash /root/install.sh\n"
     chars = string.letters + string.digits
     def gen_password(self, length=8):
