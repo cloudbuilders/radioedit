@@ -22,24 +22,19 @@ import datetime
 import cherrypy
 import datetime
 import json
-from mako.template import Template
-from mako.lookup import TemplateLookup
+import jsontemplate
 import openstack.compute
 import os
 import random
 import string
 from uuid import uuid4
 from ConfigParser import SafeConfigParser
-import os
-import random
-import string
 
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
 
     # using cron since injected files aren't executable
 
-    crond = "* * * * * root /bin/bash /root/install.sh\n"
     chars = string.letters + string.digits
     def gen_password(self, length=8):
         pw = ""
@@ -56,26 +51,6 @@ class RadioEdit(object):
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
         self.compute = Compute(username=username, apikey=apikey)
-        self.root_install = """#!/bin/bash
-
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-exec >/tmp/install.log
-exec 2>&1 
-
-echo root:%s | chpasswd
-
-echo STARTING
-mkdir /root/.ssh
-chmod 700 /root/.ssh
-echo %s > /root/.ssh/authorized_keys
-chmod 600 /root/.ssh/authorized_keys
-rm -f /etc/cron.d/firstboot
-touch /tmp/foo
-apt-get install -y curl screen
-cd /opt/
-bash -c "curl -skS https://github.com/cloudbuilders/deploy.sh/raw/master/auto.sh | /bin/bash"
-echo FINISHED
-"""
 
     @cherrypy.expose
     def index(self):
@@ -83,11 +58,9 @@ echo FINISHED
             servers = self.list()
         except:
             servers = []
-        return '<html><head><title>[radioedit]</title></head><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
-               lambda x,y: x+y,
-               map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>' % 
-               (x['ip'], x['name'], x['ip'], x['password'], x['created']), servers), "") + "</table></body></html>"
-            
+        tmpl = open('templates/index.html').read()
+        return jsontemplate.expand(tmpl, {'servers': servers})
+
     @cherrypy.expose
     def new(self, name=None):
         passwd = self.gen_password()
@@ -96,10 +69,12 @@ echo FINISHED
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
         srvname = self.prefix + str(uuid4()).replace('-', '')
         if name is None:
-            name = self.prefix + str(uuid4()).replace('-', '')
+            name = self.prefix + '-' + str(uuid4()).replace('-', '')
+        cron = "* * * * * root /bin/bash /root/install.sh\n"
+        install = open('templates/install.sh').read().format(passwd=passwd, pubkey=self.pubkey)
         self.compute.servers.create(srvname, img.id, flav.id,
-            files={"/etc/cron.d/firstboot": self.crond,
-                   "/root/install.sh": self.root_install % (passwd, self.pubkey)},
+            files={"/etc/cron.d/firstboot": cron,
+                   "/root/install.sh": install},
             meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
                   "password": passwd})
@@ -121,4 +96,7 @@ echo FINISHED
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
 
-application = cherrypy.Application(RadioEdit(cfg="/etc/cloud.cfg"), script_name=None, config=None)
+application = cherrypy.Application(RadioEdit('/etc/radioedit.cfg'), script_name=None, config=None)
+
+if __name__ == '__main__':
+    cherrypy.quickstart(RadioEdit('/etc/radioedit.cfg'))

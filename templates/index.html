@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>[radioedit]</title>
+  </head>
+  <body>
+    <form method="get"  action="/new"><input type="text" name="name"></form>
+    <form method="post" action="/reset" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form>
+
+    {.section servers}
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>IP</th>
+        <th>root</th>
+        <th>created</th>
+      </tr>
+      {.repeated section @}
+         <tr>
+           <td>{name}</td>
+           <td>{ip}</td>
+           <td>{password}</td>
+           <td>{created}</td>
+         </tr>
+      {.end}
+    </table>
+    {.end}
+  </body>
+</html>

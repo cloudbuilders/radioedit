@@ -42,4 +42,7 @@ Installation
 ------------
 
     apt-get install python-cherrypy
+    git clone https://github.com/jacobian/openstack.compute.git
+    cd openstack.compute
+    python setup.py install
 
