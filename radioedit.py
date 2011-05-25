@@ -29,18 +29,25 @@ import os
 
 class Root(object):
     """Define methods necessary to make our web page work with cherrypy"""
+    import string
     crond = "* * * * * root /bin/bash /root/install.sh\n"
-
+    chars = string.letters + string.digits
+    def gen_password(self, length=8):
+        pw = ""
+        for i in range(length):
+            pw += chars[random.randint(0,len(chars))]
+        return pw
+                    
     def __init__(self, cfg="cloud.cfg"):
         from openstack.compute import Compute
         cp = SafeConfigParser()
         cp.read([cfg])
         self.first = ""
-        self.user = cp.get("rackspacecloud", "user")
-        self.apikey = cp.get("rackspacecloud", "apikey")
+        user = cp.get("rackspacecloud", "user")
+        apikey = cp.get("rackspacecloud", "apikey")
         self.prefix = cp.get("radioedit", "prefix")
         self.pubkey = cp.get("radioedit", "pubkey")
-        self.compute = Compute(username=self.user, apikey=self.apikey)
+        self.compute = Compute(username=user, apikey=apikey)
         self.root_install = """#!/bin/bash
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -64,11 +71,12 @@ echo FINISHED
     def index(self):
         return '<html><head><title>[radioedit]</title></head><body><form method="get" action="/new"><input type="text" name="name" /></form><br/><form method="post" action="/reset"><input type="submit" value="kill all" /></form><br /><table>' + reduce(
                lambda x,y: x+y,
-               map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td></tr>' % 
-               (x['ip'], x['name'], x['ip'], x['created']), self.list()), "") + "</table></body></html>"
+               map(lambda x: '<tr><td><a href="http://%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>' % 
+               (x['ip'], x['name'], x['ip'], x['password'], x['created']), self.list()), "") + "</table></body></html>"
             
     @cherrypy.expose
     def new(self, name=None):
+        pw = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
@@ -79,7 +87,8 @@ echo FINISHED
             files={"/etc/cron.d/firstboot": self.crond,
                    "/root/install.sh": self.root_install},
             meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                  "name": name})
+                  "name": name,
+                  "password": pw})
         if self.first == "":
             self.first = srv.public_ip
         raise cherrypy.HTTPRedirect("/")
@@ -96,6 +105,7 @@ echo FINISHED
     def list(self):
         return [{"ip": s.public_ip, 
                 "created": s.metadata.has_key('created') and s.metadata['created'] or "Unknown",
+                "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
                 "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
                   for s in self.compute.servers.list()
                   if s.name.find(self.prefix) == 0]
