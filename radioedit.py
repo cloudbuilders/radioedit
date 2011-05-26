@@ -92,7 +92,7 @@ class RadioEdit(object):
         def info(s):
             return { 'ip': s.public_ip, 
                      'id': s.name,
-                     'age': ago(s.metadata.get('created', None), '0.0'),
+                     'age': ago(s.metadata.get('created', None)),
                      'password': s.metadata.get('password', '?'),
                      'name': s.metadata.get('name', '?') }
 
