@@ -103,7 +103,7 @@ def ago(date_string, date_format):
     d = datetime.datetime.strptime(date_string, date_format)
     n = datetime.datetime.now()
     diff = n - d
-    return "%0.2f hours ago" % (diff.total_seconds() / 3600)
+    return "%0.2f hours ago" % (diff.seconds / 3600.0)
 
 def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     cp = SafeConfigParser()
