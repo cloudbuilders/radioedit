@@ -20,7 +20,7 @@
         <th>Name</th>
         <th>IP</th>
         <th>root</th>
-        <th>created</th>
+        <th>age</th>
         <th>action</th>
       </tr>
       {.repeated section @}
@@ -28,7 +28,7 @@
            <td><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
-           <td>{created}</td>
+           <td>{age} hours</td>
            <td><a href="/kill?name={id}">kill</a></td>
          </tr>
       {.end}

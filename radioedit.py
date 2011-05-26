@@ -88,7 +88,7 @@ class RadioEdit(object):
 
     def list(self):
         return sorted([{"ip": s.public_ip, 'id': s.name,
-            "created": ago(s.metadata.has_key('created') and s.metadata['created'] or "Unknown", "%Y-%m-%d %H:%M:%S"),
+            "age": ago(s.metadata.has_key('created') and s.metadata['created'] or "Unknown", "%Y-%m-%d %H:%M:%S"),
             "date_created": (s.metadata.has_key('created') and 
                 s.metadata['created'] or "1970-01-01 00:00:00"),
             "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
@@ -96,14 +96,14 @@ class RadioEdit(object):
             for s in self.compute.servers.list()
             if s.name.find(self.prefix) == 0], key=lambda x:
                 datetime.datetime.strptime(x['date_created'],
-                "%Y-%m-%d %H:%M:%S"))
+                "%Y-%m-%d %H:%M:%S"), key=lambda s: float(s['age']))
 
 def ago(date_string, date_format):
     if date_string == "Unknown": return date_string
     d = datetime.datetime.strptime(date_string, date_format)
     n = datetime.datetime.now()
     diff = n - d
-    return "%0.2f hours ago" % (diff.seconds / 3600.0)
+    return "%0.2f" % (diff.seconds / 3600.0)
 
 def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     cp = SafeConfigParser()
