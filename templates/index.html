@@ -3,7 +3,7 @@
     <title>[radioedit]</title>
   </head>
   <body>
-    <p><b>Radio Edit</b><br>A tool to spinup a cloud server running nova, glance, dashboard and keystone.  It does so by downloading the latest version of everything (by running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful will have a blue background.  Click on the name to view the dashboard and play around.</p>
+    <p><b>Radio Edit</b><br>A tool to spinup a cloud server running nova, glance, dashboard and keystone.  It does so by downloading the latest version of everything (by running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful will have a blue background.</p>
 
     <form method="get"  action="/new">
        <b>Launch New Stack</b><br>
@@ -35,6 +35,11 @@
     </table>
     {.end}
     <br>
+    <h3>Using stacks</h3>
+    <ul>
+      <li>Dashboard: Click link (name) to view the dashboard and play around.
+      <li>Broken? ssh as root and use screen to see what's up- <em>screen -x</em>
+    </ul>
     <hr>
     <p>Ideas for improvements?  Click fork on <a href="https://github.com/cloudbuilders/radioedit">github</a> and then send a pull request with your patch.</p>
   </body>
