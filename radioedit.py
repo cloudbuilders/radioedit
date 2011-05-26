@@ -87,23 +87,26 @@ class RadioEdit(object):
         raise cherrypy.HTTPRedirect("/")
 
     def list(self):
-        return sorted([{"ip": s.public_ip, 'id': s.name,
-            "age": ago(s.metadata.has_key('created') and s.metadata['created'] or "Unknown", "%Y-%m-%d %H:%M:%S"),
-            "date_created": (s.metadata.has_key('created') and 
-                s.metadata['created'] or "1970-01-01 00:00:00"),
-            "password": s.metadata.has_key('password') and s.metadata['password'] or "Unknown",
-            "name": s.metadata.has_key('name') and s.metadata['name'] or s.name}
-            for s in self.compute.servers.list()
-            if s.name.find(self.prefix) == 0], key=lambda x:
-                datetime.datetime.strptime(x['date_created'],
-                "%Y-%m-%d %H:%M:%S"), key=lambda s: float(s['age']))
+        servers = self.compute.servers.list()
 
-def ago(date_string, date_format):
-    if date_string == "Unknown": return date_string
-    d = datetime.datetime.strptime(date_string, date_format)
-    n = datetime.datetime.now()
-    diff = n - d
-    return "%0.2f" % (diff.seconds / 3600.0)
+        def info(s):
+            return { 'ip': s.public_ip, 
+                     'id': s.name,
+                     'age': ago(s.metadata.get('created', None), '0.0'),
+                     'password': s.metadata.get('password', '?'),
+                     'name': s.metadata.get('name', '?') }
+
+        stack_servers = [info(s) for s in servers if s.name.find(self.prefix) == 0]
+        return sorted(stack_servers, key=lambda s: float(s['age']))
+
+def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
+    try:
+        d = datetime.datetime.strptime(date_string, date_format)
+        n = datetime.datetime.now()
+        diff = n - d
+        return "%0.2f" % (diff.seconds / 3600.0)
+    except:
+        return '0'
 
 def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     cp = SafeConfigParser()
