@@ -8,7 +8,9 @@
 
     {.section exception}
     <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
-    <p>{msg}</p>
+        {.section msg}
+        <p>{msg}</p>
+        {.end}
     {.end} 
     {.section servers}
     <table>
