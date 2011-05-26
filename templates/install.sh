@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-exec >/tmp/install.log
+exec >/var/log/install.log
 exec 2>&1 
 
 rm -f /etc/cron.d/firstboot
