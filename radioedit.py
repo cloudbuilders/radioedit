@@ -58,7 +58,7 @@ class RadioEdit(object):
             msg  = "Error: " + str(e)
             servers = []
         tmpl = open(self.base+'/templates/index.html').read()
-        return jsontemplate.expand(tmpl, {'servers': servers, 'exception': exception, msg: msg})
+        return jsontemplate.expand(tmpl, {'servers': servers, 'exception': exception, 'msg': msg})
 
     @cherrypy.expose
     def new(self, name=None):
