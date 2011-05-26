@@ -4,7 +4,7 @@
     <meta http-equiv="refresh" content="120">
   </head>
   <body>
-    <p><b>Radio Edit</b><br>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful will have a blue background.</p>
+    <p><b>Radio Edit</b><br>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have a grayish background.</p>
 
     <form method="get"  action="/new">
        <b>Launch New Stack</b><br>
@@ -25,7 +25,7 @@
         <th>action</th>
       </tr>
       {.repeated section @}
-         <tr style="background: url(http://{ip}/media/dashboard/img/content_shadow.png) repeat-x;">
+         <tr style="background: url(http://{ip}/media/dashboard/images/fillerImg.png) repeat-x;">
            <td><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
