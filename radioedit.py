@@ -50,6 +50,7 @@ class RadioEdit(object):
     @cherrypy.expose
     def index(self):
         exception = None
+        msg = None
         try:
             servers = self.list()
         except Exception as e:
