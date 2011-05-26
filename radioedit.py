@@ -27,11 +27,14 @@ from uuid import uuid4
 from ConfigParser import SafeConfigParser
 from operator import itemgetter
 
+def get_base():
+    return os.path.dirname(os.path.abspath(__file__))
+
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
 
     # using cron since injected files aren't executable
-    base = os.path.dirname(os.path.abspath(__file__))
+    base = get_base()
     chars = string.letters + string.digits
 
     def gen_password(self, length=8):
@@ -39,7 +42,7 @@ class RadioEdit(object):
         for i in range(length):
             pw += random.choice(self.chars)
         return pw
-                    
+
     def __init__(self, username, apikey, pubkey, prefix="nova"):
         from openstack.compute import Compute
         self.prefix = prefix
@@ -108,6 +111,7 @@ def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
     except:
         return '0'
 
+
 def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     cp = SafeConfigParser()
     cp.read([cfg])
@@ -122,7 +126,12 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
                  {'tools.basic_auth.on': True,
                   'tools.basic_auth.realm': 'Radioedit',
                   'tools.basic_auth.users': users,
-                  'tools.basic_auth.encrypt': lambda x: x}}
+                  'tools.basic_auth.encrypt': lambda x: x},
+            '/static':
+                 {'tools.staticdir.on': True,
+                  'tools.staticdir.root': get_base(),
+                  'tools.staticdir.dir': "static"}
+           }
     return cherrypy.Application(
                RadioEdit(username,apikey,pubkey,prefix),
                script_name=None, config=conf)
