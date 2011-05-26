@@ -49,12 +49,10 @@ class RadioEdit(object):
 
     @cherrypy.expose
     def index(self):
-        exception = ''
         msg = ''
         try:
             servers = self.list()
         except Exception as e:
-            exception = True
             msg  = "Error: " + str(e)
             servers = []
         tmpl = open(self.base+'/templates/index.html').read()
