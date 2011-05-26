@@ -3,8 +3,14 @@
     <title>[radioedit]</title>
   </head>
   <body>
-    <form method="get"  action="/new"><input type="text" name="name"></form>
-    <form method="post" action="/kill?all=true" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form>
+    <p><b>Radio Edit</b><br>A tool to spinup a cloud server running nova, glance, dashboard and keystone.  It does so by downloading the latest version of everything.  It takes around 5 minutes and if successful will have a blue background.  Click on the name to view the dashboard and play around.</p>
+
+    <table>
+      <tr>
+        <td><form method="get"  action="/new">Name: <input type="text" name="name"><input type="submit" name="run"></form></td>
+        <td><form method="post" action="/kill?all=true" onsubmit="return confirm('kill all stacks?')"><input type="submit" value="kill all"></form></td>
+      </tr>
+    </table>
 
     {.section msg}
     <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
