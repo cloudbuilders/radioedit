@@ -54,7 +54,7 @@ class RadioEdit(object):
             servers = self.list()
         except Exception as e:
             exception = True
-            msg  = str(e)
+            msg  = "Error: " + str(e)
             servers = []
         tmpl = open(self.base+'/templates/index.html').read()
         return jsontemplate.expand(tmpl, {'servers': servers, 'exception': exception, msg: msg})
