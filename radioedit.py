@@ -49,7 +49,7 @@ class RadioEdit(object):
         self.pubkey = pubkey
         self.first = ""
         self.compute = Compute(username=username, apikey=apikey)
-       self.server_size = server_size
+        self.server_size = server_size
 
     @cherrypy.expose
     def index(self):
