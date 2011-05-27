@@ -120,7 +120,10 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     apikey = cp.get("rackspacecloud", "apikey")
     prefix = cp.get("radioedit", "prefix")
     pubkey = cp.get("radioedit", "pubkey")
-    server_size = cp.get("rackspacecloud", "server_size")
+    try:
+        server_size = cp.get("rackspacecloud", "server_size")
+    except KeyError:
+        server_size = 512
     re_admin = cp.get("radioedit", "admin")
     re_admin_pass = cp.get("radioedit", "adminpass")
     users = { re_admin: re_admin_pass }
