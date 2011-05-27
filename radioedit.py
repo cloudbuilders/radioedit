@@ -43,12 +43,13 @@ class RadioEdit(object):
             pw += random.choice(self.chars)
         return pw
 
-    def __init__(self, username, apikey, pubkey, prefix="nova"):
+    def __init__(self, username, apikey, pubkey, prefix="nova", server_size=512):
         from openstack.compute import Compute
         self.prefix = prefix
         self.pubkey = pubkey
         self.first = ""
         self.compute = Compute(username=username, apikey=apikey)
+       self.server_size = server_size
 
     @cherrypy.expose
     def index(self):
@@ -66,7 +67,7 @@ class RadioEdit(object):
         password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
-        flav = [f for f in self.compute.flavors.list() if f.ram == 512][0]
+        flav = [f for f in self.compute.flavors.list() if f.ram == int(self.server_size)][0]
         srvname = self.prefix + str(uuid4()).replace('-', '')
         if name is None:
             name = self.prefix + '-' + str(uuid4()).replace('-', '')
@@ -119,6 +120,7 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     apikey = cp.get("rackspacecloud", "apikey")
     prefix = cp.get("radioedit", "prefix")
     pubkey = cp.get("radioedit", "pubkey")
+    server_size = cp.get("rackspacecloud", "server_size")
     re_admin = cp.get("radioedit", "admin")
     re_admin_pass = cp.get("radioedit", "adminpass")
     users = { re_admin: re_admin_pass }
@@ -133,7 +135,7 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
                   'tools.staticdir.dir': "static"}
            }
     return cherrypy.Application(
-               RadioEdit(username,apikey,pubkey,prefix),
+               RadioEdit(username,apikey,pubkey,prefix, server_size),
                script_name=None, config=conf)
 
 application = setup_radio_edit()
