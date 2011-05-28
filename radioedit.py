@@ -24,11 +24,22 @@ import os
 import random
 import string
 from uuid import uuid4
+import ConfigParser
 from ConfigParser import SafeConfigParser
 from operator import itemgetter
 
 def get_base():
     return os.path.dirname(os.path.abspath(__file__))
+
+def cycle(list):
+    i = -1
+    while True:
+        try:
+            i = i + 1
+            yield list[i]
+        except IndexError:
+            i = 0
+            yield list[i]
 
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
@@ -54,8 +65,11 @@ class RadioEdit(object):
     @cherrypy.expose
     def index(self):
         msg = ''
+        style = cycle(["odd", "even"])
         try:
             servers = self.list()
+            for server in servers:
+                server['style'] = style.next()
         except Exception as e:
             msg  = "Error: " + str(e)
             servers = []
@@ -123,6 +137,8 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
     try:
         server_size = cp.get("rackspacecloud", "server_size")
     except KeyError:
+        server_size = 512
+    except ConfigParser.NoOptionError:
         server_size = 512
     re_admin = cp.get("radioedit", "admin")
     re_admin_pass = cp.get("radioedit", "adminpass")

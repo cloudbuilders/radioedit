@@ -1,0 +1,195 @@
+@font-face {
+    font-family: 'anivers';
+    src: url('Anivers_Regular-webfont.eot');
+    src: url('Anivers_Regular-webfont.eot?iefix') format('eot'),
+         url('Anivers_Regular-webfont.woff') format('woff'),
+         url('Anivers_Regular-webfont.ttf') format('truetype'),
+         url('Anivers_Regular-webfont.svg#webfont3JLVF59W') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+body {
+		font-family: anivers, helvetica, arial, sans-serif;
+	color: #555;
+	font-size: 16px;
+	line-height: 21px;
+
+}
+
+a {
+	color: #1da5e7;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	width: 415px;
+	height: 358px;
+	background: url(/static/logo.png);
+	margin: 0 auto;
+	text-indent: -9999px;
+}
+
+#wrapper {
+	width: 500px;
+	margin: 0 auto;
+}
+
+#header, #footer, #content {
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+#header {
+	border-bottom: 1px solid #e1e1e1;
+	padding-bottom: 25px;
+	margin-bottom: 25px;
+}
+
+
+
+#footer {
+	border: 1px solid #e1e1e1;
+	padding-top: 25px;
+	margin-top: 55px;
+	background: #f0f0f0;
+	padding: 20px;
+	font-size: 12px;
+}
+
+form {
+	background: #fbfbfb;
+	padding: 25px;
+	border: 1px solid #e1e1e1;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+}
+
+form input[type="text"] {
+	width: 259px;
+	height: 35px;
+	border: 1px solid #d9d9d9;
+	float: left;
+}
+
+form input[type="submit"] {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background: #ddd url(/static/bg-btn.gif) top left repeat-x;
+	border: 1px solid #d9d9d9;
+	padding: 5px;
+	width: 100px;
+	float: left;
+	cursor: pointer;
+	margin-top: 6px;
+	margin-left: 10px;
+	color: #555;
+}
+
+form input[type="submit"]:hover {
+	background-position: 0 -6px;
+}
+
+form input[type="submit"]:active {
+	background-image: none;
+	
+}
+
+fieldset {
+	border: none;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+
+table th {
+	background: #e6e6e6 url(/static/misc_bg.png) top left repeat-x;
+	padding: 10px;
+	font-weight: normal;
+	color: #fff;
+	border-right: 1px solid #c6c6c6;
+	text-shadow: #b2b2b2 1px 1px 0;
+	text-align: left;
+}
+
+table td {
+	border: 1px solid #e8e8e8;
+	padding: 10px;
+}
+
+tr.odd {
+	background: #fff;
+}
+
+
+tr, .good, .bad, .medium {
+    -webkit-transition: background 0.2s;
+    -moz-transition: background 0.2s;
+	-o-transition: background 0.2s;
+	transition: background 0.2s;
+}
+tr.odd:hover, tr.even:hover {
+	background: #eee;
+}
+
+table tr.odd.good td {
+	border: 1px solid #92fd75;
+}
+
+table tr.even.good td {
+	border: 1px solid #88f06d;
+}
+
+table tr.odd.bad td {
+	border: 1px solid #ffb7b8;
+}
+
+table tr.even.bad td {
+	border: 1px solid #fba7a9;
+}
+
+table tr.odd.medium td {
+	border: 1px solid #f8e400;
+}
+
+table tr.even.medium td {
+	border: 1px solid #f0dd00;
+}
+
+
+tr.even {
+	background: #f5f5f5;
+}
+
+td.actions li {
+	margin-bottom: 6px;
+	list-style: disc;
+	font-size: 11px;
+	margin-left: 15px;
+	margin-right: 8px;
+}
+
+
+
+
+
+
+
+

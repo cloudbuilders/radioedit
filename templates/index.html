@@ -2,21 +2,31 @@
   <head>
     <title>[radioedit]</title>
     <meta http-equiv="refresh" content="120">
+    <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8"> 
   </head>
   <body>
-    <p><b>Radio Edit</b><br>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
-
-    <form method="get"  action="/new">
-       <b>Launch New Stack</b><br>
-       Name: <input type="text" name="name"><input type="submit" value="run">
-    </form>
+    <div id="wrapper">
+      <div id="header">
+      <h1>Radio Edit</h1>
+      <p>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
+      </div>
+      <div id="content">
+        <h3>Launch New Stack</h3>
+        <form method="get"  action="/new">
+        <fieldset id="" class="">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name"/>
+        <input type="submit" value="run">
+        </fieldset>
+        </form>
+      </div>
 
     {.section msg}
     <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
     <p>{msg}</p>
     {.end} 
     {.section servers}
-    <table>
+    <table border=0>
       <tr>
         <th>Name</th>
         <th>IP</th>
@@ -25,7 +35,7 @@
         <th>action</th>
       </tr>
       {.repeated section @}
-         <tr>
+         <tr class="{style}">
            <td style="background: url(http://{ip}/media/dashboard/images/button/launch.png) no-repeat left center; padding-left: 20px"><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
@@ -35,7 +45,7 @@
       {.end}
     </table>
     {.end}
-    <br>
+    <div id="footer">
     <h3>Using stacks</h3>
     <ul>
       <li>Dashboard: Click link (name) to view the dashboard and play around.
@@ -44,5 +54,7 @@
     </ul>
     <hr>
     <p>Ideas for improvements?  Click fork on <a href="https://github.com/cloudbuilders/radioedit">github</a> and then send a pull request with your patch.</p>
+    </div>
+  </div>
   </body>
 </html>
