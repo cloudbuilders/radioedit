@@ -85,7 +85,7 @@ class RadioEdit(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(host, username='root', pkey=mykey, timeout=2)
-            stdin, stdout, stderr = ssh.exec_command('tail -n %d "%s"' % (size, fn))
+            stdin, stdout, stderr = ssh.exec_command('tail -n %d "%s"' % (int(size), fn))
             log = stdout.read()
             ssh.close()
         except Exception, e:
