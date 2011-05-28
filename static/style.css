@@ -46,9 +46,8 @@ h1 {
 }
 
 #header {
-	border-bottom: 1px solid #e1e1e1;
 	padding-bottom: 25px;
-	margin-bottom: 25px;
+	margin-top: 10px;
 }
 
 
@@ -62,22 +61,9 @@ h1 {
 	font-size: 12px;
 }
 
-form {
-	background: #fbfbfb;
-	padding: 25px;
-	border: 1px solid #e1e1e1;
-}
-
 label {
 	display: block;
 	margin-bottom: 5px;
-}
-
-form input[type="text"] {
-	width: 259px;
-	height: 35px;
-	border: 1px solid #d9d9d9;
-	float: left;
 }
 
 form input[type="submit"] {
@@ -87,11 +73,10 @@ form input[type="submit"] {
 	background: #ddd url(/static/bg-btn.gif) top left repeat-x;
 	border: 1px solid #d9d9d9;
 	padding: 5px;
-	width: 100px;
-	float: left;
+	width: 150px;
+	float: right;
 	cursor: pointer;
-	margin-top: 6px;
-	margin-left: 10px;
+	margin: 6px 10px;
 	color: #555;
 }
 
@@ -102,10 +87,6 @@ form input[type="submit"]:hover {
 form input[type="submit"]:active {
 	background-image: none;
 	
-}
-
-fieldset {
-	border: none;
 }
 
 ul {

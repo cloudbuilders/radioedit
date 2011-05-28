@@ -7,19 +7,14 @@
   <body>
     <div id="wrapper">
       <div id="header">
-      <h1>Radio Edit</h1>
+      <h3>Radio Edit</h3>
       <p>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
       </div>
-      <div id="content">
-        <h3>Launch New Stack</h3>
-        <form method="get"  action="/new">
-        <fieldset id="" class="">
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name"/>
-        <input type="submit" value="run">
-        </fieldset>
-        </form>
-      </div>
+
+    <form method="get" action="/new">
+      <input type="hidden" name="name" id="name"/>
+      <input type="submit" value="launch new stack" onclick="document.getElementById('name').setAttribute('value', prompt('Name your stack'))">
+    </form>
 
     {.section msg}
     <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
@@ -30,16 +25,16 @@
       <tr>
         <th>Name</th>
         <th>IP</th>
-        <th>root</th>
-        <th>age</th>
-        <th>action</th>
+        <th>password</th>
+        <th>hours old</th>
+        <th colspan="2">action</th>
       </tr>
       {.repeated section @}
          <tr class="{style}">
            <td style="background: url(http://{ip}/media/dashboard/images/button/launch.png) no-repeat left center; padding-left: 20px"><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
-           <td>{age} hr</td>
+           <td>{age}</td>
            <td><a href="/kill?name={id}" onclick="return confirm('kill this server?')">kill</a></td>
            <td><a href="/log?host={ip}">log</a></td>
          </tr>
@@ -53,9 +48,10 @@
       <li>Broken? ssh as root and use screen to see what's up <em>hint: screen -x</em>
       <li>check the install log at /var/log/install.log
     </ul>
-    <hr>
-    <p>Ideas for improvements?  Click fork on <a href="https://github.com/cloudbuilders/radioedit">github</a> and then send a pull request with your patch.</p>
     </div>
+    <br>
+    <img src="/static/logo.png">
+    <p>Ideas for improvements?  Click fork on <a href="https://github.com/cloudbuilders/radioedit">github</a> and then send a pull request with your patch.</p>
   </div>
   </body>
 </html>
