@@ -6,6 +6,9 @@ exec 2>&1
 
 rm -f /etc/cron.d/firstboot
 
+# try to make screen usable - since install.sh is kicked off by cron, TERM is unset
+export TERM="xterm
+
 echo Setting root password
 echo root:{password} | chpasswd
 
