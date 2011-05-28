@@ -39,8 +39,9 @@
            <td style="background: url(http://{ip}/media/dashboard/images/button/launch.png) no-repeat left center; padding-left: 20px"><a href="http://{ip}">{name}</a></td>
            <td>{ip}</td>
            <td>{password}</td>
-           <td>{age} hours</td>
-           <td><a href="/kill?name={id}">kill</a></td>
+           <td>{age} hr</td>
+           <td><a href="/kill?name={id}" onclick="return confirm('kill this server?')">kill</a></td>
+           <td><a href="/log?host={ip}">log</a></td>
          </tr>
       {.end}
     </table>

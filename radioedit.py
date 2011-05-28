@@ -77,6 +77,20 @@ class RadioEdit(object):
         return jsontemplate.expand(tmpl, {'servers': servers, 'msg': msg})
 
     @cherrypy.expose
+    def log(self, host, size=25, fn="/var/log/install.log"):
+        import paramiko
+        privatekeyfile = os.path.expanduser('~/.ssh/id_rsa')
+        mykey = paramiko.RSAKey.from_private_key_file(privatekeyfile)
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(host, username='root', pkey=mykey, timeout=2)
+        stdin, stdout, stderr = ssh.exec_command('tail -n %d "%s"' % (size, fn))
+        log = stdout.read()
+        ssh.close()
+        tmpl = open(self.base+'/templates/log.html').read()
+        return jsontemplate.expand(tmpl, {'log': log, 'host': host})
+
+    @cherrypy.expose
     def new(self, name=None):
         password = self.gen_password()
         img = [i for i in self.compute.images.list()

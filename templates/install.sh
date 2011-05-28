@@ -9,11 +9,6 @@ rm -f /etc/cron.d/firstboot
 echo Setting root password
 echo root:{password} | chpasswd
 
-echo NGINX for logs
-apt-get install -y nginx
-echo "server { listen   1234; location / { root /var/log; autoindex on; } }" > /etc/nginx/sites-enabled/default
-/etc/init.d/nginx restart
-
 echo Injecting key
 mkdir /root/.ssh
 chmod 700 /root/.ssh

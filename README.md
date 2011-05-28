@@ -41,7 +41,8 @@ Later
 Installation
 ------------
 
-    apt-get install python-cherrypy
+    apt-get install -y python-cherrypy
+    apt-get install -y python-paramiko
     git clone https://github.com/jacobian/openstack.compute.git
     cd openstack.compute
     python setup.py install
