@@ -23,6 +23,6 @@ apt-get install -y curl
 
 echo Downloading and running auto.sh
 cd /opt/
-bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | /bin/bash"
+bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | env CLOUDSERVER=1 /bin/bash"
 
 echo FINISHED
