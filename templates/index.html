@@ -13,7 +13,7 @@
 
     <form method="get" action="/new">
       <input type="hidden" name="name" id="name"/>
-      <input type="submit" value="launch new stack" onclick="name=prompt('Name your stack'); document.getElementById('name').setAttribute('value', name); return !!name">
+      <input type="submit" value="launch new stack" onclick="var name=prompt('Name your stack'); document.getElementById('name').setAttribute('value', name); return !!name">
     </form>
 
     {.section msg}
