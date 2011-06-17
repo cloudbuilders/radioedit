@@ -139,7 +139,7 @@ def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
         d = datetime.datetime.strptime(date_string, date_format)
         n = datetime.datetime.now()
         diff = n - d
-        return "%0.2f" % (diff.seconds / 3600.0)
+        return "%0.2f" % ((diff.days * 24) + (diff.seconds / 3600.0))
     except:
         return '0'
 
