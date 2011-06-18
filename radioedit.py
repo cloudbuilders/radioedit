@@ -59,12 +59,15 @@ class RadioEdit(object):
     def __init__(self, username,
                  apikey, pubkey,
                  prefix="nova",
+                 auth_url="https://auth.api.rackspacecloud.com/v1.0",
                  server_size=512):
         from openstack.compute import Compute
         self.prefix = prefix
         self.pubkey = pubkey
         self.first = ""
-        self.compute = Compute(username=username, apikey=apikey)
+        self.compute = Compute(username=username,
+                               apikey=apikey,
+                               auth_url=auth_url)
         self.server_size = server_size
 
     @cherrypy.expose
@@ -197,6 +200,11 @@ def setup_radio_edit(cfg=None):
                         'tools.basic_auth.users': users,
                         'tools.basic_auth.encrypt': lambda x: x}
 
+    try:
+        auth_url = cp.get("rackspacecloud", "auth_url")
+    except(KeyError, ConfigParser.NoOptionError):
+        auth_url = "https://auth.api.rackspacecloud.com/v1.0"
+
     conf = {'/': config_slash,
             '/static':
                  {'tools.staticdir.on': True,
@@ -204,7 +212,12 @@ def setup_radio_edit(cfg=None):
                   'tools.staticdir.dir': "static"},
            }
     return cherrypy.Application(
-               RadioEdit(username, apikey, pubkey, prefix, server_size),
+               RadioEdit(username,
+                         apikey,
+                         pubkey,
+                         prefix,
+                         auth_url,
+                         server_size),
                script_name=None, config=conf)
 
 application = setup_radio_edit()
