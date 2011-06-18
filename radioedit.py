@@ -60,6 +60,7 @@ class RadioEdit(object):
                  apikey, pubkey,
                  prefix="nova",
                  auth_url="https://auth.api.rackspacecloud.com/v1.0",
+                 private_key=None,
                  server_size=512):
         from openstack.compute import Compute
         self.prefix = prefix
@@ -69,6 +70,7 @@ class RadioEdit(object):
                                apikey=apikey,
                                auth_url=auth_url)
         self.server_size = server_size
+        self.private_key = private_key
 
     @cherrypy.expose
     def index(self):
@@ -88,7 +90,7 @@ class RadioEdit(object):
     def log(self, host, size=25, fn="/var/log/install.log"):
         try:
             import paramiko
-            privatekeyfile = os.path.expanduser('~/.ssh/id_rsa')
+            privatekeyfile = self.private_key
             mykey = paramiko.RSAKey.from_private_key_file(privatekeyfile)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -205,6 +207,11 @@ def setup_radio_edit(cfg=None):
     except(KeyError, ConfigParser.NoOptionError):
         auth_url = "https://auth.api.rackspacecloud.com/v1.0"
 
+    try:
+        private_key = cp.get("radioedit", "privatekey")
+    except(KeyError, ConfigParser.NoOptionError):
+        private_key = os.path.expanduser('~/.ssh/id_rsa')
+
     conf = {'/': config_slash,
             '/static':
                  {'tools.staticdir.on': True,
@@ -215,9 +222,11 @@ def setup_radio_edit(cfg=None):
                RadioEdit(username,
                          apikey,
                          pubkey,
-                         prefix,
-                         auth_url,
-                         server_size),
+                         prefix=prefix,
+                         auth_url=auth_url,
+                         server_size=server_size,
+                         private_key=private_key,
+                         ),
                script_name=None, config=conf)
 
 application = setup_radio_edit()
