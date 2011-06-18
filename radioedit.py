@@ -144,7 +144,19 @@ def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
         return '0'
 
 
-def setup_radio_edit(cfg="/etc/radioedit.cfg"):
+def setup_radio_edit(cfg=None):
+    etc_cfg="/etc/radioedit.cfg"
+    cwd_path_cfg = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "radioedit.cfg")
+    
+    if not cfg and os.path.exists(etc_cfg):
+        cfg=etc_cfg
+    elif not cfg and os.path.exists(cwd_path_cfg):
+        cfg=cwd_path_cfg
+    else:
+        raise Exception("No config file.")
+        
     cp = SafeConfigParser()
     cp.read([cfg])
     username = cp.get("rackspacecloud", "user")
