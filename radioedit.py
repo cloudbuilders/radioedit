@@ -180,14 +180,24 @@ def setup_radio_edit(cfg=None):
         server_size = 512
     except ConfigParser.NoOptionError:
         server_size = 512
-    re_admin = cp.get("radioedit", "admin")
-    re_admin_pass = cp.get("radioedit", "adminpass")
-    users = {re_admin: re_admin_pass}
-    conf = {'/':
-                 {'tools.basic_auth.on': True,
-                  'tools.basic_auth.realm': 'Radioedit',
-                  'tools.basic_auth.users': users,
-                  'tools.basic_auth.encrypt': lambda x: x},
+
+    config_slash = {}
+    try:
+        if cp.get("radioedit", "password_protected").lower() in \
+                ('no', 'false', 'off', '0'):
+            password_protected = False
+    except(KeyError, ConfigParser.NoOptionError):
+        password_protected = True
+    if password_protected:
+        re_admin = cp.get("radioedit", "admin")
+        re_admin_pass = cp.get("radioedit", "adminpass")
+        users = {re_admin: re_admin_pass}
+        config_slash = {'tools.basic_auth.on': True,
+                        'tools.basic_auth.realm': 'Radioedit',
+                        'tools.basic_auth.users': users,
+                        'tools.basic_auth.encrypt': lambda x: x}
+
+    conf = {'/': config_slash,
             '/static':
                  {'tools.staticdir.on': True,
                   'tools.staticdir.root': get_base(),
