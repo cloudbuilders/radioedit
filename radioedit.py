@@ -158,7 +158,7 @@ def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
 def setup_radio_edit(cfg=None):
     etc_cfg = "/etc/radioedit.cfg"
     cwd_path_cfg = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
+        get_base(),
         "radioedit.cfg")
 
     if not cfg and os.path.exists(etc_cfg):
