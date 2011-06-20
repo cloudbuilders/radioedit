@@ -16,7 +16,6 @@
 #} limitations under the License.
 
 
-import openstack.compute
 import datetime
 import cherrypy
 import jsontemplate
@@ -88,41 +87,51 @@ class RadioEdit(object):
 
     @cherrypy.expose
     def log(self, host, size=25, fn="/var/log/install.log"):
-        try:
-            import paramiko
-            privatekeyfile = self.private_key
-            mykey = paramiko.RSAKey.from_private_key_file(privatekeyfile)
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(host, username='root', pkey=mykey, timeout=2)
-            stdin, stdout, stderr = \
-                ssh.exec_command('tail -n %d "%s"' % (int(size), fn))
-            log = stdout.read()
-            ssh.close()
-        except Exception, e:
-            log = "Exception: %s" % e
+        status = self.compute.servers.find(public_ip=host).status
+
+        if status == "ACTIVE":
+            try:
+                import paramiko
+                privatekeyfile = self.private_key
+                mykey = paramiko.RSAKey.from_private_key_file(privatekeyfile)
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(host, username='root', pkey=mykey, timeout=2)
+                stdin, stdout, stderr = \
+                    ssh.exec_command('tail -n %d "%s"' % (int(size), fn))
+                log = stdout.read()
+                ssh.close()
+            except Exception, e:
+                log = "Exception: %s" % e
+        else:
+            log = "Slice is not ready to be used, we are currently in status: %s" % status
+
         tmpl = open(self.base + '/templates/log.html').read()
         return jsontemplate.expand(tmpl, {'log': log, 'host': host})
 
     @cherrypy.expose
-    def new(self, name=None):
+    def new(self, name=None, srvtype=None):
         password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
         flav = [f for f in self.compute.flavors.list() \
                     if f.ram == int(self.server_size)][0]
-        srvname = self.prefix + str(uuid4()).replace('-', '')
+        srvname = self.prefix + "-" + str(uuid4()).replace('-', '')
         if name is None:
-            name = self.prefix + '-' + str(uuid4()).replace('-', '')
+            name = srvname
         cron = "* * * * * root /bin/bash /root/install.sh\n"
         install = open(self.base + '/templates/install.sh').read().format(
-            password=password, pubkey=self.pubkey)
+            password=password,
+            pubkey=self.pubkey,
+            srvtype=srvtype,
+            )
         self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": cron,
                    "/root/install.sh": install},
             meta={"created": \
                       datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
+                  "srvtype": srvtype,
                   "password": password})
         raise cherrypy.HTTPRedirect("/")
 
@@ -142,6 +151,7 @@ class RadioEdit(object):
             return {'ip': s.public_ip,
                      'id': s.name,
                      'age': ago(s.metadata.get('created', None)),
+                     'srvtype': s.metadata.get('srvtype', "nova"),
                      'password': s.metadata.get('password', '?'),
                      'name': s.metadata.get('name', '?')}
 
