@@ -26,10 +26,11 @@ import string
 from uuid import uuid4
 import ConfigParser
 from ConfigParser import SafeConfigParser
-from operator import itemgetter
+
 
 def get_base():
     return os.path.dirname(os.path.abspath(__file__))
+
 
 def cycle(list):
     i = -1
@@ -40,6 +41,7 @@ def cycle(list):
         except IndexError:
             i = 0
             yield list[i]
+
 
 class RadioEdit(object):
     """Define methods necessary to make our web page work with cherrypy"""
@@ -54,13 +56,21 @@ class RadioEdit(object):
             pw += random.choice(self.chars)
         return pw
 
-    def __init__(self, username, apikey, pubkey, prefix="nova", server_size=512):
+    def __init__(self, username,
+                 apikey, pubkey,
+                 prefix="nova",
+                 auth_url="https://auth.api.rackspacecloud.com/v1.0",
+                 private_key=None,
+                 server_size=512):
         from openstack.compute import Compute
         self.prefix = prefix
         self.pubkey = pubkey
         self.first = ""
-        self.compute = Compute(username=username, apikey=apikey)
+        self.compute = Compute(username=username,
+                               apikey=apikey,
+                               auth_url=auth_url)
         self.server_size = server_size
+        self.private_key = private_key
 
     @cherrypy.expose
     def index(self):
@@ -71,26 +81,27 @@ class RadioEdit(object):
             for server in servers:
                 server['style'] = style.next()
         except Exception as e:
-            msg  = "Error: " + str(e)
+            msg = "Error: " + str(e)
             servers = []
-        tmpl = open(self.base+'/templates/index.html').read()
+        tmpl = open(self.base + '/templates/index.html').read()
         return jsontemplate.expand(tmpl, {'servers': servers, 'msg': msg})
 
     @cherrypy.expose
     def log(self, host, size=25, fn="/var/log/install.log"):
         try:
             import paramiko
-            privatekeyfile = os.path.expanduser('~/.ssh/id_rsa')
+            privatekeyfile = self.private_key
             mykey = paramiko.RSAKey.from_private_key_file(privatekeyfile)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(host, username='root', pkey=mykey, timeout=2)
-            stdin, stdout, stderr = ssh.exec_command('tail -n %d "%s"' % (int(size), fn))
+            stdin, stdout, stderr = \
+                ssh.exec_command('tail -n %d "%s"' % (int(size), fn))
             log = stdout.read()
             ssh.close()
         except Exception, e:
             log = "Exception: %s" % e
-        tmpl = open(self.base+'/templates/log.html').read()
+        tmpl = open(self.base + '/templates/log.html').read()
         return jsontemplate.expand(tmpl, {'log': log, 'host': host})
 
     @cherrypy.expose
@@ -98,16 +109,19 @@ class RadioEdit(object):
         password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
-        flav = [f for f in self.compute.flavors.list() if f.ram == int(self.server_size)][0]
+        flav = [f for f in self.compute.flavors.list() \
+                    if f.ram == int(self.server_size)][0]
         srvname = self.prefix + str(uuid4()).replace('-', '')
         if name is None:
             name = self.prefix + '-' + str(uuid4()).replace('-', '')
         cron = "* * * * * root /bin/bash /root/install.sh\n"
-        install = open(self.base+'/templates/install.sh').read().format(password=password, pubkey=self.pubkey)
+        install = open(self.base + '/templates/install.sh').read().format(
+            password=password, pubkey=self.pubkey)
         self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": cron,
                    "/root/install.sh": install},
-            meta={"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            meta={"created": \
+                      datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "name": name,
                   "password": password})
         raise cherrypy.HTTPRedirect("/")
@@ -125,14 +139,16 @@ class RadioEdit(object):
         servers = self.compute.servers.list()
 
         def info(s):
-            return { 'ip': s.public_ip, 
+            return {'ip': s.public_ip,
                      'id': s.name,
                      'age': ago(s.metadata.get('created', None)),
                      'password': s.metadata.get('password', '?'),
-                     'name': s.metadata.get('name', '?') }
+                     'name': s.metadata.get('name', '?')}
 
-        stack_servers = [info(s) for s in servers if s.name.find(self.prefix) == 0]
+        stack_servers = \
+            [info(s) for s in servers if s.name.find(self.prefix) == 0]
         return sorted(stack_servers, key=lambda s: float(s['age']))
+
 
 def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
     try:
@@ -144,7 +160,19 @@ def ago(date_string, date_format="%Y-%m-%d %H:%M:%S"):
         return '0'
 
 
-def setup_radio_edit(cfg="/etc/radioedit.cfg"):
+def setup_radio_edit(cfg=None):
+    etc_cfg = "/etc/radioedit.cfg"
+    cwd_path_cfg = os.path.join(
+        get_base(),
+        "radioedit.cfg")
+
+    if not cfg and os.path.exists(etc_cfg):
+        cfg = etc_cfg
+    elif not cfg and os.path.exists(cwd_path_cfg):
+        cfg = cwd_path_cfg
+    else:
+        raise Exception("No config file.")
+
     cp = SafeConfigParser()
     cp.read([cfg])
     username = cp.get("rackspacecloud", "user")
@@ -157,21 +185,48 @@ def setup_radio_edit(cfg="/etc/radioedit.cfg"):
         server_size = 512
     except ConfigParser.NoOptionError:
         server_size = 512
-    re_admin = cp.get("radioedit", "admin")
-    re_admin_pass = cp.get("radioedit", "adminpass")
-    users = { re_admin: re_admin_pass }
-    conf = {'/': 
-                 {'tools.basic_auth.on': True,
-                  'tools.basic_auth.realm': 'Radioedit',
-                  'tools.basic_auth.users': users,
-                  'tools.basic_auth.encrypt': lambda x: x},
+
+    config_slash = {}
+    try:
+        if cp.get("radioedit", "password_protected").lower() in \
+                ('no', 'false', 'off', '0'):
+            password_protected = False
+    except(KeyError, ConfigParser.NoOptionError):
+        password_protected = True
+    if password_protected:
+        re_admin = cp.get("radioedit", "admin")
+        re_admin_pass = cp.get("radioedit", "adminpass")
+        users = {re_admin: re_admin_pass}
+        config_slash = {'tools.basic_auth.on': True,
+                        'tools.basic_auth.realm': 'Radioedit',
+                        'tools.basic_auth.users': users,
+                        'tools.basic_auth.encrypt': lambda x: x}
+
+    try:
+        auth_url = cp.get("rackspacecloud", "auth_url")
+    except(KeyError, ConfigParser.NoOptionError):
+        auth_url = "https://auth.api.rackspacecloud.com/v1.0"
+
+    try:
+        private_key = cp.get("radioedit", "privatekey")
+    except(KeyError, ConfigParser.NoOptionError):
+        private_key = os.path.expanduser('~/.ssh/id_rsa')
+
+    conf = {'/': config_slash,
             '/static':
                  {'tools.staticdir.on': True,
                   'tools.staticdir.root': get_base(),
-                  'tools.staticdir.dir': "static"}
+                  'tools.staticdir.dir': "static"},
            }
     return cherrypy.Application(
-               RadioEdit(username,apikey,pubkey,prefix, server_size),
+               RadioEdit(username,
+                         apikey,
+                         pubkey,
+                         prefix=prefix,
+                         auth_url=auth_url,
+                         server_size=server_size,
+                         private_key=private_key,
+                         ),
                script_name=None, config=conf)
 
 application = setup_radio_edit()
