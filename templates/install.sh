@@ -1,5 +1,5 @@
 #!/bin/bash
-
+SRVTYPE={srvtype}
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 exec >/var/log/install.log
 exec 2>&1 
@@ -21,8 +21,17 @@ chmod 600 /root/.ssh/authorized_keys
 echo Installing dependancies
 apt-get install -y curl
 
-echo Downloading and running auto.sh
-cd /opt/
-bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | env CLOUDSERVER=1 /bin/bash"
+
+if [[ "$SRVTYPE" == "swift" ]];then
+    echo "Installing swift"
+    bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/swift.sh | /bin/bash"
+else
+    echo Downloading and running auto.sh
+    cd /opt/
+
+    #By default installing nova
+    echo "Installing nova"
+    bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | env CLOUDSERVER=1 /bin/bash"
+fi
 
 echo FINISHED

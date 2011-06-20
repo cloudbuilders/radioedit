@@ -2,18 +2,28 @@
   <head>
     <title>[radioedit]</title>
     <meta http-equiv="refresh" content="120">
-    <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8"> 
+    <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <script type="text/javascript">
+      function askAndGo(srvtype) {
+      var name=prompt('Name your stack');
+      document.getElementById('name').setAttribute('value', name);
+      document.getElementById('srvtype').setAttribute('value', srvtype);
+      return !!name
+      }
+    </script>
   </head>
   <body>
     <div id="wrapper">
       <div id="header">
       <h3>Radio Edit</h3>
-      <p>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a>.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
+      <p>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a> or a swift install.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
       </div>
 
     <form method="get" action="/new">
       <input type="hidden" name="name" id="name"/>
-      <input type="submit" value="launch new stack" onclick="var name=prompt('Name your stack'); document.getElementById('name').setAttribute('value', name); return !!name">
+      <input type="hidden" name="srvtype" id="srvtype"/>
+      <input type="submit" value="new swift" onclick="return askAndGo('swift')">
+      <input type="submit" value="new nova" onclick="return askAndGo('nova')">
     </form>
 
     {.section msg}
@@ -23,6 +33,7 @@
     {.section servers}
     <table border=0>
       <tr>
+        <th>Type</th>
         <th>Name</th>
         <th>IP</th>
         <th>password</th>
@@ -31,7 +42,10 @@
       </tr>
       {.repeated section @}
          <tr class="{style}">
-           <td style="background: url(http://{ip}/media/dashboard/images/button/launch.png) no-repeat left center; padding-left: 20px"><a href="http://{ip}">{name}</a></td>
+           <td><img src="/static/srvtype/{srvtype}.png" width="24" height="24" title="{srvtype}"></td>
+           <td style="background: url(http://{ip}/media/dashboard/images/button/launch.png) no-repeat left center; padding-left: 20px">
+             <a href="http://{ip}">{name}</a>
+           </td>
            <td>{ip}</td>
            <td>{password}</td>
            <td>{age}</td>
@@ -42,11 +56,17 @@
     </table>
     {.end}
     <div id="footer">
-    <h3>Using stacks</h3>
+    <h3>Using nova stacks</h3>
     <ul>
       <li>Dashboard: Click link (name) to view the dashboard and play around.
       <li>Broken? ssh as root and use screen to see what's up <em>hint: screen -x</em>
       <li>check the install log at /var/log/install.log
+    </ul>
+    <h3>Using swift stacks</h3>
+    <ul>
+      <li>Auth server url for the stack is <b>http://IP_ADDRESS:8080/auth/v1.0</b></li>
+      <li>Username: test:tester</li>
+      <li>Password: testing</li>
     </ul>
     </div>
     <br>
