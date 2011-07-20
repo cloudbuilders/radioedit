@@ -4,11 +4,10 @@
     <meta http-equiv="refresh" content="120">
     <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script type="text/javascript">
-      function askAndGo(srvtype, novascript_url) {
+      function askAndGo(srvtype) {
       var name=prompt('Name your stack');
       document.getElementById('name').setAttribute('value', name);
       document.getElementById('srvtype').setAttribute('value', srvtype);
-      document.getElementById('novascript_url').setAttribute('value', novascript_url);
       return !!name
       }
     </script>
