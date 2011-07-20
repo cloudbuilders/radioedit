@@ -19,15 +19,24 @@
       <p>A tool to launch a nova, glance, dashboard and keystone environment inside <a href="http://www.rackspace.com/cloud">rackspace cloud</a> or a swift install.  It does so by downloading the latest version of everything (running <a href="https://github.com/cloudbuilders/deploy.sh/blob/master/auto.sh">auto.sh</a> on boot).  It takes around 5 minutes and if successful have an up arrow next to the name.</p>
       </div>
 
-    <form method="get" action="/new">
-      <input type="hidden" name="name" id="name"/>
-      <input type="hidden" name="srvtype" id="srvtype"/>
-      <label for="baseurl">nova.sh url
-        <input type="text" name="novascript_url" id="novascript_url" value="https://raw.github.com/cloudbuilders/deploy.sh/master/nova.sh" />
-      </label> 
-      <input type="submit" value="new swift" onclick="return askAndGo('swift')"/>
-      <input type="submit" value="new nova" onclick="return askAndGo('nova')"/>
-    </form>
+      <div id="nova" class="form_block">
+        <form method="get" action="/new">
+          <input type="hidden" name="name" id="name"/>
+          <input type="hidden" name="srvtype" id="srvtype"/>
+          <label for="baseurl">nova.sh url
+            <input type="text" name="novascript_url" id="novascript_url" value="https://raw.github.com/cloudbuilders/deploy.sh/master/nova.sh" />
+          </label> 
+          <input type="submit" value="new nova" onclick="return askAndGo('nova')"/>
+        </form>
+      </div>
+      
+      <div id="swift" class="form_block">
+        <form method="get" action="/new">
+          <input type="hidden" name="name" id="name"/>
+          <input type="hidden" name="srvtype" id="srvtype"/>
+          <input type="submit" value="new swift" onclick="return askAndGo('swift')"/>
+        </form>
+      </div>
 
     {.section msg}
     <h3>An exception has occurred when attempting to communicate with cloud servers</h3>
