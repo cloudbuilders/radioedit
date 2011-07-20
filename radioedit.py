@@ -110,7 +110,7 @@ class RadioEdit(object):
         return jsontemplate.expand(tmpl, {'log': log, 'host': host})
 
     @cherrypy.expose
-    def new(self, name=None, srvtype=None, script='nova.sh'):
+    def new(self, name=None, srvtype=None, baseurl="https://raw.github.com/cloudbuilders/deploy.sh/master/", script='nova.sh'):
         password = self.gen_password()
         img = [i for i in self.compute.images.list()
                 if i.name.find("Ubuntu 10.10") != -1][0]
@@ -125,6 +125,7 @@ class RadioEdit(object):
             pubkey=self.pubkey,
             srvtype=srvtype,
             script=script,
+            baseurl=baseurl,
             )
         self.compute.servers.create(srvname, img.id, flav.id,
             files={"/etc/cron.d/firstboot": cron,
