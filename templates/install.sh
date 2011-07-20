@@ -31,7 +31,7 @@ else
 
     #By default installing nova
     echo "Installing nova"
-    bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | env CLOUDSERVER=1 NOVASCRIPT={script} BASEURL={baseurl} /bin/bash"
+    bash -c "curl -skS https://raw.github.com/cloudbuilders/deploy.sh/master/auto.sh | env CLOUDSERVER=1 NOVASCRIPTURL={novascript_url} /bin/bash"
 fi
 
 echo FINISHED

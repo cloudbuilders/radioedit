@@ -4,12 +4,11 @@
     <meta http-equiv="refresh" content="120">
     <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script type="text/javascript">
-      function askAndGo(srvtype, baseurl, script) {
+      function askAndGo(srvtype, novascript_url) {
       var name=prompt('Name your stack');
       document.getElementById('name').setAttribute('value', name);
       document.getElementById('srvtype').setAttribute('value', srvtype);
-      document.getElementById('baseurl').setAttribute('value', baseurl);
-      document.getElementById('script').setAttribute('value', script);
+      document.getElementById('novascript_url').setAttribute('value', novascript_url);
       return !!name
       }
     </script>
@@ -24,13 +23,11 @@
     <form method="get" action="/new">
       <input type="hidden" name="name" id="name"/>
       <input type="hidden" name="srvtype" id="srvtype"/>
-      <input type="hidden" name="script" id="script" value="nova.sh"/>
-      <label for="baseurl">Base Url
-        <input type="text" name="baseurl" id="baseurl" value="https://raw.github.com/cloudbuilders/deploy.sh/master/" />
+      <label for="baseurl">nova.sh url
+        <input type="text" name="novascript_url" id="novascript_url" value="https://raw.github.com/cloudbuilders/deploy.sh/master/nova.sh" />
       </label> 
-      <input type="submit" value="new swift" onclick="return askAndGo('swift', 'ignore.sh')"/>
-      <input type="submit" value="new nova" onclick="return askAndGo('nova', 'nova.sh')"/>
-      <input type="submit" value="new nova stable" onclick="return askAndGo('nova', 'stable.sh')"/>
+      <input type="submit" value="new swift" onclick="return askAndGo('swift')"/>
+      <input type="submit" value="new nova" onclick="return askAndGo('nova')"/>
     </form>
 
     {.section msg}
