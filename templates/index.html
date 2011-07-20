@@ -4,10 +4,11 @@
     <meta http-equiv="refresh" content="120">
     <link rel="stylesheet" href="static/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script type="text/javascript">
-      function askAndGo(srvtype) {
+      function askAndGo(srvtype, script) {
       var name=prompt('Name your stack');
       document.getElementById('name').setAttribute('value', name);
       document.getElementById('srvtype').setAttribute('value', srvtype);
+      document.getElementById('script').setAttribute('value', script);
       return !!name
       }
     </script>
@@ -22,8 +23,10 @@
     <form method="get" action="/new">
       <input type="hidden" name="name" id="name"/>
       <input type="hidden" name="srvtype" id="srvtype"/>
-      <input type="submit" value="new swift" onclick="return askAndGo('swift')">
-      <input type="submit" value="new nova" onclick="return askAndGo('nova')">
+      <input type="hidden" name="script" id="script" value="nova.sh"/>
+      <input type="submit" value="new swift" onclick="return askAndGo('swift', 'ignore.sh')">
+      <input type="submit" value="new nova" onclick="return askAndGo('nova', 'nova.sh')">
+      <input type="submit" value="new nova stabile" onclick="return askAndGo('nova', 'stabile.sh')">
     </form>
 
     {.section msg}
