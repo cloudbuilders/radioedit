@@ -41,9 +41,19 @@ Later
 Installation
 ------------
 
-    apt-get install -y python-cherrypy
+    #You need cherrypy 3.  This may be python-cherrypy on some debian based distros or python-cherrypy3 on others
+    apt-get install -y python-cherrypy3
     apt-get install -y python-paramiko
     git clone https://github.com/jacobian/openstack.compute.git
     cd openstack.compute
     python setup.py install
 
+Configuration
+-------------
+
+There is an example configuration file in radioedit.cfg.
+
+We use apache2 for deployment with the following mod_wsgi configuration:
+   
+    WSGIScriptAlias / /var/www/radioedit/radioedit.py
+    WSGIPassAuthorization On
