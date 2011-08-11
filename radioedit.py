@@ -198,6 +198,7 @@ def setup_radio_edit(cfg=None):
         server_size = 512
 
     config_slash = {}
+    password_protected = False
     try:
         if cp.get("radioedit", "password_protected").lower() in \
                 ('no', 'false', 'off', '0'):
